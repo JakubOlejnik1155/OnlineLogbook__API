@@ -1,32 +1,41 @@
 //authentification routes
 const router = require("express").Router();
 const User = require("../model/User");
+const { emailTokenGenerate } = require("../functions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { registerValidation, loginValidation } = require("../validation");
 
 //registration
 router.post("/register", async (req, res) => {
+  //is confirm Password good?
+  if (req.body.password != req.body.passwordConfirm) {
+    return res.send({ error: "passwords are not the same" });
+  }
+
   //validate Data
   const { error } = registerValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.send({ error: error.details[0].message });
 
   //chcek if the user is in DB
   const emailExists = await User.findOne({ email: req.body.email });
-  if (emailExists) return res.status(400).send("Email already exists");
+  if (emailExists) return res.send({ error: "Email already exists" });
 
   //hash the password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
   // make new user
+  const authToken = emailTokenGenerate(32);
   const user = new User({
     email: req.body.email,
-    password: hashedPassword
+    password: hashedPassword,
+    authToken: authToken,
+    isAuthorized: 0
   });
   try {
     const savedUser = await user.save();
-    res.send({ user: user._id });
+    res.send({ user: user._id, success: "registered" });
   } catch (err) {
     res.status(400).send(err);
   }
@@ -56,15 +65,16 @@ router.post("/login", async (req, res) => {
   //res.status(200).send("correct");
 });
 
-const user123 = {
-  email: "Swwa",
-  pass: "123"
-};
+//JUST TESTING CONNECTIONS
 router.post("/test", (req, res) => {
-//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3001");
+  const user123 = {
+    email: "Swwa",
+    pass: "123"
+  };
   console.log("test made");
   console.log(req.body);
-  res.json(req.body);
+  res.json(user123);
 });
+//END OF TESTING CONNECTIONS
 
 module.exports = router;

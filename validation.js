@@ -10,6 +10,9 @@ const registerValidation = data => {
       .required(),
     password: Joi.string()
       .min(8)
+      .required(),
+    passwordConfirm: Joi.string()
+      .min(8)
       .required()
   });
   return schema.validate(data);
