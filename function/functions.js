@@ -1,5 +1,4 @@
 const emailTokenGenerate = length => {
-  //edit the token allowed characters
   const a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(
     ""
   );

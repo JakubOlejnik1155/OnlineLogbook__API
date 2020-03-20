@@ -49,6 +49,21 @@ router.post("/register", async (req, res) => {
   }
 });
 
+//validation user email
+router.put("/validation/:token", async (req, res) => {
+  //get token from url
+  const token = req.params.token;
+  //is user with this token?
+  const user = await User.findOne({authToken: token});
+  //update user
+  if(user){
+     await User.updateOne({authToken: token}, {authToken: '', isAuthorized: true});
+    res.send({success: "email verified"});
+  }else{
+    res.send({error: "your email has already been verified"})
+  }
+});
+
 //login
 router.post("/login", async (req, res) => {
   //validate data before logging in
@@ -72,11 +87,5 @@ router.post("/login", async (req, res) => {
   //logged in propperly
   //res.status(200).send("correct");
 });
-
-//JUST TESTING CONNECTIONS
-router.post("/validate", (req, res) => {
-  console.log("validation opened");
-});
-//END OF TESTING CONNECTIONS
 
 module.exports = router;
