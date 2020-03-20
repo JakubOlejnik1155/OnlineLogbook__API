@@ -42,7 +42,7 @@ router.post("/register", async (req, res) => {
     res.send({ user: user._id, success: "registered" });
     appMailer.registrationEmail({
       email: user.email,
-      data: { email: req.body.email }
+      data: { email: req.body.email, authToken: user.authToken }
     });
   } catch (err) {
     res.status(400).send(err);

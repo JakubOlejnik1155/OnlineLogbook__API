@@ -1,9 +1,8 @@
 const dotenv = require("dotenv");
 const sgMail = require("@sendgrid/mail");
 
-sgMail.setApiKey(
-  "SG.Mj8oWOJxRVmD-PL1Y4G1gA._cdcUDyTvkJ7HssH_g1hpG3qF1D6oDwPqyXxXxf9ioY"
-);
+dotenv.config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const message = {};
 message.from = "online@logbook.com";
