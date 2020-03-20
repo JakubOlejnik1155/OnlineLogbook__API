@@ -13,7 +13,7 @@ const {
 //registration
 router.post("/register", async (req, res) => {
   //is confirm Password good?
-  if (req.body.password != req.body.passwordConfirm) {
+  if (req.body.password !== req.body.passwordConfirm) {
     return res.send({ error: "passwords are not the same" });
   }
 
@@ -21,7 +21,7 @@ router.post("/register", async (req, res) => {
   const { error } = registerValidation(req.body);
   if (error) return res.send({ error: error.details[0].message });
 
-  //chcek if the user is in DB
+  //check if the user is in DB
   const emailExists = await User.findOne({ email: req.body.email });
   if (emailExists) return res.send({ error: "Email already exists" });
 
@@ -40,9 +40,9 @@ router.post("/register", async (req, res) => {
   try {
     const savedUser = await user.save();
     res.send({ user: user._id, success: "registered" });
-    appMailer.registrationEmail({
+    await appMailer.registrationEmail({
       email: user.email,
-      data: { email: req.body.email, authToken: user.authToken }
+      data: {email: req.body.email, authToken: user.authToken}
     });
   } catch (err) {
     res.status(400).send(err);
@@ -51,7 +51,7 @@ router.post("/register", async (req, res) => {
 
 //login
 router.post("/login", async (req, res) => {
-  //validate data before loging in
+  //validate data before logging in
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -74,14 +74,8 @@ router.post("/login", async (req, res) => {
 });
 
 //JUST TESTING CONNECTIONS
-router.post("/test", (req, res) => {
-  const user123 = {
-    email: "Swwa",
-    pass: "123"
-  };
-  console.log("test made");
-  console.log(req.body);
-  res.json(user123);
+router.post("/validate", (req, res) => {
+  console.log("validation opened");
 });
 //END OF TESTING CONNECTIONS
 

@@ -15,11 +15,11 @@ mongoose.connect(
   }
 );
 
-//Middlewares
+//Middleware
 app.use(express.json());
 app.use(cors());
 
-//route Middlewares
+//route Middleware
 app.use("/api/user", authRoute);
 
-app.listen(3000, () => console.log("serever Up and Running"));
+app.listen(3000, () => console.log("server Up and Running"));
