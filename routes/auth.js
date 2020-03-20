@@ -1,10 +1,14 @@
 //authentification routes
 const router = require("express").Router();
 const User = require("../model/User");
-const { emailTokenGenerate } = require("../functions");
+const { emailTokenGenerate } = require("../function/functions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { registerValidation, loginValidation } = require("../validation");
+const appMailer = require("../mail/appMailer");
+const {
+  registerValidation,
+  loginValidation
+} = require("../function/validation");
 
 //registration
 router.post("/register", async (req, res) => {
@@ -36,6 +40,10 @@ router.post("/register", async (req, res) => {
   try {
     const savedUser = await user.save();
     res.send({ user: user._id, success: "registered" });
+    appMailer.registrationEmail({
+      email: user.email,
+      data: { email: req.body.email }
+    });
   } catch (err) {
     res.status(400).send(err);
   }
