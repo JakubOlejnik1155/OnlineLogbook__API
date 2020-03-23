@@ -5,7 +5,7 @@ dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const message = {};
-message.from = "online@logbook.com";
+message.from = "onlineLogbook@sailaway.com";
 message.mail_settings = {
   sandbox_mode: {
     enable: false

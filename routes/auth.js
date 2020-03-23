@@ -10,7 +10,7 @@ const {
   loginValidation
 } = require("../function/validation");
 
-//registration
+//registration breakpoint
 router.post("/register", async (req, res) => {
   //is confirm Password good?
   if (req.body.password !== req.body.passwordConfirm) {
@@ -49,7 +49,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-//validation user email
+//validation user email breakpoint
 router.put("/validation/:token", async (req, res) => {
   //get token from url
   const token = req.params.token;
@@ -57,14 +57,40 @@ router.put("/validation/:token", async (req, res) => {
   const user = await User.findOne({authToken: token});
   //update user
   if(user){
-     await User.updateOne({authToken: token}, {authToken: '', isAuthorized: true});
-    res.send({success: "email verified"});
+    try{
+      await User.updateOne({authToken: token}, {authToken: '', isAuthorized: true});
+      res.send({success: "email verified"});
+    }catch (error) {
+        res.send(error);
+    }
   }else{
     res.send({error: "your email has already been verified"})
   }
 });
 
-//login
+//password renew breakpoint ==> setting auth token to user again
+router.post("/renewPassword", async (req, res) =>{
+  const user = await User.findOne({email: req.body.email});
+  if (user){
+    try{
+      const newAuthToken = emailTokenGenerate(32);
+      await User.updateOne(user, {authToken: newAuthToken});
+      await appMailer.renewPassword({
+        email: user.email,
+        data: { authToken: newAuthToken}
+      });
+      res.send({success: "send renew PassLink"})
+    }catch{
+      res.send({error: "We were unable to send you an email. Try again."})
+    }
+
+  }
+  else{
+    res.send({error: "it looks like you are not registered"});
+  }
+});
+
+//login breakpoint
 router.post("/login", async (req, res) => {
   //validate data before logging in
   const { error } = loginValidation(req.body);
