@@ -1,4 +1,4 @@
-//authentification routes
+//authentication routes
 const router = require("express").Router();
 const User = require("../model/User");
 const { emailTokenGenerate } = require("../function/functions");
@@ -7,7 +7,8 @@ const jwt = require("jsonwebtoken");
 const appMailer = require("../mail/appMailer");
 const {
   registerValidation,
-  loginValidation
+  loginValidation,
+  setNewPasswordValidation
 } = require("../function/validation");
 
 //registration breakpoint
@@ -89,6 +90,38 @@ router.post("/renewPassword", async (req, res) =>{
     res.send({error: "it looks like you are not registered"});
   }
 });
+
+//setting new password
+router.put("/setNewPassword/:token", async (req, res) =>{
+  //get token from url
+  const token = req.params.token;
+  //password validation
+  const { error } = setNewPasswordValidation(req.body);
+  if (error)
+    return res.send({ error: error.details[0].message });
+  if (req.body.newPassword !== req.body.confirmNewPassword)
+    return res.send({error: "passwords are not equal"});
+  const newPass = {
+    newPassword: req.body.newPassword,
+    confirmNewPassword: req.body.confirmNewPassword
+  };
+  const user = await User.findOne({authToken: token});
+  if (user){
+    try {
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword =  await bcrypt.hash(req.body.newPassword, salt);
+      await User.updateOne(user, {password: hashedNewPassword, authToken: ''});
+      res.send({success: "Your password has been changed"})
+    }catch (e) {
+      res.send({error: "Oops something get wrong"});
+    }
+  }else{
+    res.send({error: "Oops something get wrong"});
+  }
+});
+
+
+
 
 //login breakpoint
 router.post("/login", async (req, res) => {
