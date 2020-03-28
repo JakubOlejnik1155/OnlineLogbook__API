@@ -121,30 +121,28 @@ router.put("/setNewPassword/:token", async (req, res) =>{
 });
 
 
-
-
 //login breakpoint
 router.post("/login", async (req, res) => {
   //validate data before logging in
   const { error } = loginValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.send({error: error.details[0].message});
 
   //if account exists
   const user = await User.findOne({
     email: req.body.email
   });
-  if (!user) return res.status(400).send("Email is not found");
+  if (!user) return res.send({error: "Email not found"});
 
   //is password correct
   const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(400).send("password is wrong");
+  if (!validPassword) return res.send({error: "password is wrong"});
+
+  //is user authorized
+  if (!user.isAuthorized) return res.send({error: "please verify your email before logging in"});
 
   //create and assign json web token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).send(token);
-
-  //logged in propperly
-  //res.status(200).send("correct");
+  res.header("auth-token", token).send({ status: "logged", jwt: token, email: user.email, userId: user._id});
 });
 
 module.exports = router;
