@@ -1,6 +1,7 @@
 //authentication routes
 const router = require("express").Router();
 const User = require("../model/User");
+const LoggedUser = require("../model/LoggedUsers");
 const { emailTokenGenerate } = require("../function/functions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -142,7 +143,25 @@ router.post("/login", async (req, res) => {
 
   //create and assign json web token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).send({ status: "logged", jwt: token, email: user.email, userId: user._id});
+  const loggedUser = new LoggedUser({
+      id: user._id,
+      jwt: token
+    });
+    try{
+      const insertLoggedIUser = await loggedUser.save();
+      res.header("auth-token", token).send({ status: "logged", jwt: token, email: user.email, userId: user._id });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+});
+
+router.delete("/logout/:id",  async(req, res ) =>{
+  const loggedUser = await  LoggedUser.findOne({id: req.body.userId});
+  try{
+     await LoggedUser.remove(loggedUser);
+  }catch(error){
+    res.send(error);
+  }
 });
 
 module.exports = router;
