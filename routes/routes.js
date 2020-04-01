@@ -1,7 +1,6 @@
 //authentication routes
 const router = require("express").Router();
 const User = require("../model/User");
-const LoggedUser = require("../model/LoggedUsers");
 const { emailTokenGenerate } = require("../function/functions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -122,46 +121,20 @@ router.put("/setNewPassword/:token", async (req, res) =>{
 });
 
 
-//login breakpoint
-router.post("/login", async (req, res) => {
-  //validate data before logging in
-  const { error } = loginValidation(req.body);
-  if (error) return res.send({error: error.details[0].message});
+router.get('/try', authenticateToken, (req, res)=>{
+  return res.send({message: "Authorized", userID: res.id});
+});
 
-  //if account exists
-  const user = await User.findOne({
-    email: req.body.email
+function authenticateToken(req, res, next){
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token === null) return res.send({error: true, message: "you are not authorized"});
+
+  jwt.verify(token, process.env.TOKEN_SECRET, (error, id) =>{
+    if (error) return res.send({error: true, message: "you are not authorized"});
+    req.id = id;
+    next();
   });
-  if (!user) return res.send({error: "Email not found"});
-
-  //is password correct
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.send({error: "password is wrong"});
-
-  //is user authorized
-  if (!user.isAuthorized) return res.send({error: "please verify your email before logging in"});
-
-  //create and assign json web token
-  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  const loggedUser = new LoggedUser({
-      id: user._id,
-      jwt: token
-    });
-    try{
-      const insertLoggedIUser = await loggedUser.save();
-      res.header("auth-token", token).send({ status: "logged", jwt: token, email: user.email, userId: user._id });
-    } catch (err) {
-      res.status(400).send(err);
-    }
-});
-
-router.delete("/logout/:id",  async(req, res ) =>{
-  const loggedUser = await  LoggedUser.findOne({id: req.body.userId});
-  try{
-     await LoggedUser.remove(loggedUser);
-  }catch(error){
-    res.send(error);
-  }
-});
+}
 
 module.exports = router;

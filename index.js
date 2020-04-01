@@ -4,22 +4,20 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 //import Routes
-const authRoute = require("./routes/auth");
+const Routes = require("./routes/routes");
 dotenv.config();
 //CONNECT TO DB
 mongoose.connect(
   process.env.DB_CONNECT,
   { useNewUrlParser: true, useUnifiedTopology: true },
   () => {
-    console.log("connected to DB");
-  }
-);
+    console.log("connected to DB");});
 
 //Middleware
 app.use(express.json());
 app.use(cors());
 
 //route Middleware
-app.use("/api/user", authRoute);
+app.use("/api/user", Routes);
 
 app.listen(3000, () => console.log("server Up and Running"));
