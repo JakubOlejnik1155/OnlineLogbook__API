@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 const appMailer = require("../mail/appMailer");
 const {
   registerValidation,
-  loginValidation,
   setNewPasswordValidation
 } = require("../function/validation");
 

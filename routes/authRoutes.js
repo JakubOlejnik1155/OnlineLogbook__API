@@ -46,6 +46,18 @@ router.delete("/logout", async (req, res) =>{
         res.send(e);
     }
 });
+//ask for new token
+router.post("/token", async (req, res) =>{
+    const refreshToken = req.body.RJwt;
+    if (!refreshToken) return res.send({ status: 401, error: true, message: "something went wrong"});
+    const DBtoken = RJwt.findOne({RJwt: refreshToken});
+    if (!DBtoken) return res.send({status: 403, error: true, message: "something went wrong"});
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, decoded)=>{
+        if (error) return res.send({status: 403, error: true, message: "something went wrong"});
+        const newAccessToken = generateAccessToken(decoded.userId);
+        res.send({status: 200, error: false, message: "new token sent", JWT: newAccessToken});
+    });
+});
 
 
 //@TODO delete before production
@@ -56,7 +68,6 @@ router.post("/jwt/decode", async (req, res)=>{
             if (error) res.send(error);
             res.send(decoded);
         });
-    console.log(user);
 });
 
 module.exports = router;
