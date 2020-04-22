@@ -2,7 +2,7 @@
 const router = require("express").Router();
 const User = require("../model/User");
 const RJwt = require("../model/refreshToken");
-const FacebookUser = require('../model/FacebookUser');
+const SocialUser = require('../model/SocialUser');
 const { emailTokenGenerate } = require("../function/functions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
     res.send({ user: user._id, success: "registered" });
     await appMailer.registrationEmail({
       email: user.email,
-      doata: {email: req.body.email, authToken: user.authToken}
+      data: {email: req.body.email, authToken: user.authToken}
     });
   } catch (err) {
     res.status(400).send(err);
@@ -121,12 +121,12 @@ router.put("/setNewPassword/:token", async (req, res) =>{
   }
 });
 //facebook login/register
-router.post( "/facebook", async (req, res)=>{
+router.post( "/socialuser", async (req, res)=>{
   const email = req.body.email;
   const profilePicture = req.body.profilePicture;
   //is user exists ?
   try{
-    const isUserExists = await FacebookUser.findOne({email: email});
+    const isUserExists = await SocialUser.findOne({email: email});
     if (isUserExists){
       //logowanie ponowne
       const userId = isUserExists._id;
@@ -140,12 +140,12 @@ router.post( "/facebook", async (req, res)=>{
     }
     else{
       //pushowaie do bazy danych i logowanie
-      const fbUser = new FacebookUser({
+      const socialUser = new SocialUser({
         email: email,
         profilePicture: profilePicture
       });
-      await fbUser.save()
-      const UserExists = await FacebookUser.findOne({ email: email });
+      await socialUser.save()
+      const UserExists = await SocialUser.findOne({ email: email });
 
       const userId = UserExists._id;
       const userObject = { userId: userId };

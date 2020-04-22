@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const FacebookUserSchema = new mongoose.Schema({
+const SocialUserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -10,4 +10,4 @@ const FacebookUserSchema = new mongoose.Schema({
         required: true,
     }
 });
-module.exports = mongoose.model("FacebookUser", FacebookUserSchema);
+module.exports = mongoose.model("SocialUser", SocialUserSchema);
