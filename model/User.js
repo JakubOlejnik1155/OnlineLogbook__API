@@ -13,6 +13,11 @@ const userSchema = new mongoose.Schema({
     min: 8,
     max: 1024
   },
+  profilePicture: {
+    type: String,
+    required: false,
+    default: null
+  },
   authToken: {
     type: String,
     required: true,

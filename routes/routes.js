@@ -1,6 +1,8 @@
 //authentication routes
 const router = require("express").Router();
 const User = require("../model/User");
+const RJwt = require("../model/refreshToken");
+const FacebookUser = require('../model/FacebookUser');
 const { emailTokenGenerate } = require("../function/functions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -42,7 +44,7 @@ router.post("/register", async (req, res) => {
     res.send({ user: user._id, success: "registered" });
     await appMailer.registrationEmail({
       email: user.email,
-      data: {email: req.body.email, authToken: user.authToken}
+      doata: {email: req.body.email, authToken: user.authToken}
     });
   } catch (err) {
     res.status(400).send(err);
@@ -118,8 +120,49 @@ router.put("/setNewPassword/:token", async (req, res) =>{
     res.send({error: "Oops something get wrong"});
   }
 });
+//facebook login/register
+router.post( "/facebook", async (req, res)=>{
+  const email = req.body.email;
+  const profilePicture = req.body.profilePicture;
+  //is user exists ?
+  try{
+    const isUserExists = await FacebookUser.findOne({email: email});
+    if (isUserExists){
+      //logowanie ponowne
+      const userId = isUserExists._id;
+      const userObject = { userId: userId };
+      const accessToken = await jwt.sign(userObject, process.env.TOKEN_SECRET, { expiresIn: '5m' });
+      const refreshToken = await jwt.sign(userObject, process.env.REFRESH_TOKEN_SECRET);
+      //adding logged user to DB
+      const DBtoken = new RJwt({ RJwt: refreshToken });
+      await DBtoken.save();
+      res.send({ accessToken: accessToken, refreshToken: refreshToken, profilePicture: profilePicture });
+    }
+    else{
+      //pushowaie do bazy danych i logowanie
+      const fbUser = new FacebookUser({
+        email: email,
+        profilePicture: profilePicture
+      });
+      await fbUser.save()
+      const UserExists = await FacebookUser.findOne({ email: email });
+
+      const userId = UserExists._id;
+      const userObject = { userId: userId };
+      const accessToken = await jwt.sign(userObject, process.env.TOKEN_SECRET, { expiresIn: '5m' });
+      const refreshToken = await jwt.sign(userObject, process.env.REFRESH_TOKEN_SECRET);
+      //adding logged user to DB
+      const DBtoken = new RJwt({ RJwt: refreshToken });
+      await DBtoken.save();
+      res.send({ accessToken: accessToken, refreshToken: refreshToken, profilePicture: profilePicture });
+    }
+  }
+  catch(e){return res.send({error: "something went wrong"})}
+
+});
 
 
+//try breakpoint authorization
 router.get('/try', authenticateToken, (req, res)=>{
   return res.send({message: "Authorized", userID: res.id});
 });
