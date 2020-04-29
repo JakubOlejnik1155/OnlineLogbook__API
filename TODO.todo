@@ -1,0 +1,15 @@
+Todos:
+  New:
+//    ☐ Press Cmd/Ctrl+Enter to add a new todo @critical @high @low @today
+☐ disable refresh token, make use only refresh yoken to authorization @low
+☐ change methods, statuses and breakpoints for routes.js and authRoutes.js to make API to be REST @low
+
+Done:
+//    ✔ Press Alt+D to mark a todo as done
+✔ make routers to add boat and cruise @high @started(20-04-29 14:27) @done(20-04-29 15:40) @lasted(1h13m27s)
+  Cancelled:
+//    ✘ Press Alt+C to mark a todo as cancelled
+  Timekeeping:
+//    ☐ Press Alt+S to mark a todo as started
+
+

@@ -41,6 +41,29 @@ const setNewPasswordValidation = data =>{
   return schema.validate(data);
 };
 
+const cruiseValidation = data => {
+  const schema = Joi.object({
+    country: Joi.string().required(),
+    harbour: Joi.string().required(),
+    sailingArea: Joi.string().required(),
+    startDate: Joi.string().required(),
+  });
+  return schema.validate(data)
+};
+
+
+const boatValidation = data => {
+  const schema = Joi.object({
+    MMSI: Joi.string().required().length(9),
+    draft: Joi.string().optional().allow(''),
+    name: Joi.string().required(),
+    type: Joi.string().optional().allow(''),
+  });
+  return schema.validate(data);
+};
+
+module.exports.boatValidation = boatValidation;
+module.exports.cruiseValidation = cruiseValidation;
 module.exports.setNewPasswordValidation = setNewPasswordValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.registerValidation = registerValidation;
