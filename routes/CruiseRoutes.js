@@ -35,12 +35,12 @@ router.post("", authenticateToken, async (req, res) => {
     const cruiseObject = new Cruise({ ...cruise, boatID: newBoatID, userID: userID });
     const currentCruiseObject = new CurrentCruise({userID: userID, cruiseID: cruiseObject._id});
 
-    const isCurrentObjectForThisUser = await CurrentCruise.findOne({userID: cruiseObject._id});
-    if (isCurrentObjectForThisUser) res.status(403).send({error: { code: 403, msg: "you can not start more then one cruise" } })
+    const isCurrentObjectForThisUser = await CurrentCruise.findOne({userID: userID});
+    if (isCurrentObjectForThisUser) return res.status(403).send({error: { code: 403, msg: "you can not start more then one cruise" } })
     else await currentCruiseObject.save();
 
     const isSimilarCruiseObject = await Cruise.findOne({ ...cruise, boatID: newBoatID, userID: userID });
-    if (isSimilarCruiseObject) res.status(403).send({ error: { code: 403, msg: "you added this cruise before"} });
+    if (isSimilarCruiseObject) return res.status(403).send({ error: { code: 403, msg: "you added this cruise before"} });
     else await cruiseObject.save()
 
     return res.sendStatus(201);
