@@ -11,7 +11,6 @@ const {
 
 // /api/cruises  => add cruise
 router.post("", authenticateToken, async (req, res) => {
-
     const {boat, cruise } = req.body;
     //are boat data validate
     const { error } = boatValidation(boat);
@@ -43,7 +42,20 @@ router.post("", authenticateToken, async (req, res) => {
     if (isSimilarCruiseObject) return res.status(403).send({ error: { code: 403, msg: "you added this cruise before"} });
     else await cruiseObject.save()
 
-    return res.sendStatus(201);
+    return res.status(201).send({success:{code: '201'}});
+});
+
+// /api/cruises/current
+router.get("/current", authenticateToken, async (req, res) => {
+    const userID = req.id.userId;
+    CurrentCruise.find({ userID: userID },  (err, data) => {
+        if (err) return res.status(500).send({ error: { cose: 500, msg: "Internal Server Error"}});
+        if (data) return res.status(200).send({
+            description: "current cruise for logged user",
+            data
+        });
+        else return res.status(200).send({data:[]})
+    });
 });
 
 function authenticateToken(req, res, next) {

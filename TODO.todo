@@ -1,12 +1,14 @@
 Todos:
   New:
 //    ☐ Press Cmd/Ctrl+Enter to add a new todo @critical @high @low @today
-☐ disable refresh token, make use only refresh yoken to authorization @low
-☐ change methods, statuses and breakpoints for routes.js and authRoutes.js to make API to be REST @low
+    ☐ disable refresh token, make use only refresh yoken to authorization @low
+    ☐ change methods, statuses and breakpoints for routes.js and authRoutes.js to make API to be REST @low
+    ☐ add photo to boat schema @low
 
-Done:
-//    ✔ Press Alt+D to mark a todo as done
-✔ make routers to add boat and cruise @high @started(20-04-29 14:27) @done(20-04-29 15:40) @lasted(1h13m27s)
+  Done:
+    //    ✔ Press Alt+D to mark a todo as done
+    ✔ make GET breakpoint to find out if the current user have any cruises @critical @started(20-04-29 16:50) @done(20-04-29 21:08) @lasted(4h18m57s)
+    ✔ make routers to add boat and cruise @high @started(20-04-29 14:27) @done(20-04-29 15:40) @lasted(1h13m27s)
   Cancelled:
 //    ✘ Press Alt+C to mark a todo as cancelled
   Timekeeping:
