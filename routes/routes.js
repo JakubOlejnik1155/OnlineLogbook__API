@@ -1,8 +1,8 @@
 //authentication routes
 const router = require("express").Router();
-const User = require("../model/User");
-const RJwt = require("../model/refreshToken");
-const SocialUser = require('../model/SocialUser');
+const User = require("../model/user/User");
+const RJwt = require("../model/user/refreshToken");
+const SocialUser = require('../model/user/SocialUser');
 const { emailTokenGenerate } = require("../function/functions");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");

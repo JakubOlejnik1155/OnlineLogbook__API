@@ -55,13 +55,26 @@ const cruiseValidation = data => {
 const boatValidation = data => {
   const schema = Joi.object({
     MMSI: Joi.string().required().length(9),
-    draft: Joi.string().optional().allow(''),
+    draft: Joi.number().optional().allow(''),
     name: Joi.string().required(),
     type: Joi.string().optional().allow(''),
   });
   return schema.validate(data);
 };
 
+const newDayValidation = data => {
+  const schema = Joi.object({
+    startHarbor: Joi.string().required(),
+    engineMth: Joi.string().required(),
+    oil: Joi.boolean().required(),
+    fuel: Joi.number().required().min(0).max(100),
+    freshWater: Joi.number().required().min(0).max(100),
+    date: Joi.date().required()
+  });
+  return schema.validate(data);
+}
+
+module.exports.newDayValidation = newDayValidation;
 module.exports.boatValidation = boatValidation;
 module.exports.cruiseValidation = cruiseValidation;
 module.exports.setNewPasswordValidation = setNewPasswordValidation;

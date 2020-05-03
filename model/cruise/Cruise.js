@@ -18,8 +18,9 @@ const CruiseSchema = new mongoose.Schema({
         required: true,
     },
     startDate: {
-        type: String,
+        type: Date,
         required: true,
+        default: new Date(),
     },
     boatID: {
         type: String,
