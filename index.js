@@ -6,6 +6,7 @@ const cors = require("cors");
 //import Routes
 const Routes = require("./routes/routes");
 const CruiseRouter = require("./routes/CruiseRoutes");
+const DayRoutes = require("./routes/DayRoutes");
 dotenv.config();
 //CONNECT TO DB
 mongoose.connect(
@@ -21,6 +22,7 @@ app.use(cors());
 //route Middleware
 app.use("/api/user", Routes);
 app.use("/api/cruises", CruiseRouter);
+app.use("/api/days", DayRoutes);
 
 
 app.listen(3000, () => console.log("server Up and Running"));

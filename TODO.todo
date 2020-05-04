@@ -1,12 +1,13 @@
 Todos:
   New:
 //    ☐ Press Cmd/Ctrl+Enter to add a new todo @critical @high @low @today
-    ☐ disable refresh token, make use only refresh yoken to authorization @low
-    ☐ change methods, statuses and breakpoints for routes.js and authRoutes.js to make API to be REST @low
-    ☐ add photo to boat schema @low
+☐ disable refresh token, make use only refresh yoken to authorization @low
+☐ change methods, statuses and breakpoints for routes.js and authRoutes.js to make API to be REST @low
+☐ add photo to boat schema @low
 
-    Done:
-    //    ✔ Press Alt+D to mark a todo as done
+Done:
+//    ✔ Press Alt+D to mark a todo as done
+    ✔ Move day routes to seperate file @low @done(20-05-04 15:53)
     ✔  make GET breakpoint to find out if exists actuial day object for user @high @started(20-05-04 13:43) @done(20-05-04 14:43) @lasted(1h19s)
     ✔  add Day object and route to add day @high @started(20-05-02 22:03) @done(20-05-04 13:42) @lasted(1d15h39m26s)
     ✔ make GET breakpoint to find out if the current user have any cruises @critical @started(20-04-29 16:50) @done(20-04-29 21:08) @lasted(4h18m57s)
