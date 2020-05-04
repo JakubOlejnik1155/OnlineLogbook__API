@@ -16,7 +16,7 @@ const {
     newDayValidation
 } = require("../function/validation");
 
-// /api/cruises  => add cruise
+// POST /api/cruises  => add cruise
 router.post("", authenticateToken, async (req, res) => {
     const {boat, cruise } = req.body;
     //are boat data validate
@@ -57,11 +57,11 @@ router.post("", authenticateToken, async (req, res) => {
     }
 });
 
-// /api/cruises/current
+// GET /api/cruises/current => check if is active cruise for user
 router.get("/current", authenticateToken, async (req, res) => {
     const userID = req.id.userId;
     CurrentCruise.find({ userID: userID },  (err, data) => {
-        if (err) return res.status(500).send({ error: { cose: 500, msg: "Internal Server Error"}});
+        if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error"}});
         if (data) return res.status(200).send({
             description: "current cruise for logged user",
             data
@@ -70,7 +70,7 @@ router.get("/current", authenticateToken, async (req, res) => {
     });
 });
 
-// /api/cruises/days
+// POST /api/cruises/days => activatin a day of active cruise
 router.post("/days", authenticateToken, async (req, res) => {
     const {day} = req.body;
     const {error} = newDayValidation(day);
@@ -80,7 +80,7 @@ router.post("/days", authenticateToken, async (req, res) => {
     //is cruise exist
     const isCruiseExist = await CurrentCruise.findOne({userID: userID})
     if (!isCruiseExist) return res.status(400).send({ error: { code: 400, msg: "there is no active cruise" } })
-    
+
     const cruiseID = isCruiseExist.cruiseID;
     const DayObject = new Day({ ...day, cruiseID: cruiseID, userID: userID,});
     const CurrentDayObject = new CurrentDay({ userID: userID, cruiseID: cruiseID, dayID: DayObject._id });
@@ -100,16 +100,30 @@ router.post("/days", authenticateToken, async (req, res) => {
     }
 });
 
+// GET /api/cruises/days/current => check if is active cruise for user
+router.get("/days/current", authenticateToken, async (req,res) => {
+    const userID = req.id.userId;
+    console.log(userID);
+    CurrentDay.find({userID: userID},(err, data) => {
+        if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        if (data) return res.status(200).send({
+            description: "current day for logged user",
+            data
+        });
+        else return res.status(200).send({ data: [] })
+    });
+});
+
 
 
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    if (token === null) return res.send({ error: true, message: "you are not authorized" });
+    if (token === null) return res.send({ error: { code: 401, msg: "you are not authorized" } });
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (error, id) => {
-        if (error) return res.send({ error: true, message: "you are not authorized" });
+        if (error) return res.send({ error: { code: 401, msg: "you are not authorized" } });
         req.id = id;
         next();
     });
