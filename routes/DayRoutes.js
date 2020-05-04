@@ -41,7 +41,10 @@ router.post("", authenticateToken, async (req, res) => {
 // GET /api/days/current => check if is active cruise for user
 router.get("/current", authenticateToken, async (req, res) => {
     const userID = req.id.userId;
-    console.log(userID);
+
+    const isCruiseExist = await CurrentCruise.findOne({ userID: userID })
+    if (!isCruiseExist) return res.status(405).send({ error: { code: 405, msg: "there is no active cruise" } })
+
     CurrentDay.find({ userID: userID }, (err, data) => {
         if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
         if (data) return res.status(200).send({
