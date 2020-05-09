@@ -74,6 +74,24 @@ const newDayValidation = data => {
   return schema.validate(data);
 }
 
+const newHourlyEntryValidation = data => {
+  const schema = Joi.object({
+    compasCourse: Joi.number().required().min(0).max(360),
+    sailsState: Joi.string().allow(''),
+    engineState: Joi.string().allow(''),
+    boatSpeed: Joi.number(),
+    log: Joi.number().required(),
+    windDirection: Joi.string().required(),
+    windSpeed: Joi.number().required(),
+    seaState: Joi.number().required(),
+    latitude: Joi.number().required(),
+    longitude: Joi.number().required(),
+    hour: Joi.number().required(),
+  });
+  return schema.validate(data);
+}
+
+module.exports.newHourlyEntryValidation = newHourlyEntryValidation;
 module.exports.newDayValidation = newDayValidation;
 module.exports.boatValidation = boatValidation;
 module.exports.cruiseValidation = cruiseValidation;

@@ -4,8 +4,10 @@ const jwt = require("jsonwebtoken");
 const CurrentCruise = require('../model/cruise/CurrentCruise');
 const CurrentDay = require('../model/day/CurrentDay');
 const Day = require('../model/day/Day');
+const {HourEntry} = require('../model/day/Day');
 const {
-    newDayValidation
+    newDayValidation,
+    newHourlyEntryValidation
 } = require("../function/validation");
 
 // POST /api/days => activatin a day of active cruise
@@ -55,6 +57,38 @@ router.get("/current", authenticateToken, async (req, res) => {
     });
 });
 
+// /api/days/hourly
+router.post("/hourly", authenticateToken, async (req, res) => {
+    const hourly = req.body.data;
+    const userID = req.id.userId;
+    const { error } = newHourlyEntryValidation(hourly)
+    if (error) return res.status(400).send({ error: { code: 400, msg: error.details[0].message } });
+
+    // is active day for this user?
+    const CurrentDayObject = await CurrentDay.findOne({userID: userID})
+    if (!CurrentDayObject) return res.status(400).send({ error: { code: 400, msg: "there is no active day" } })
+
+    //is day object connected with current day object?
+    const DayObject = await Day.findOne({ _id: CurrentDayObject.dayID});
+    if (!DayObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
+
+    // is already entry on this hour ?
+    let flag = false;
+    await DayObject.hourlyArray.forEach(entry => {
+        if(entry.hour === hourly.hour)
+            flag = true;
+    })
+    if(flag) return res.status(403).send({ error: { code: 403, msg: "You added entry for this hour before" } });
+
+    //enter data try
+    try{
+        await DayObject.hourlyArray.push(hourly)
+        await DayObject.save()
+        return res.status(201).send({ success: { code: '201' } });
+    }catch(error){
+        return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
+    }
+});
 
 
 

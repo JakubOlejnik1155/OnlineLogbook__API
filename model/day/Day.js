@@ -39,19 +39,19 @@ const  weatcherSchema = new mongoose.Schema({
 
 const hourEntryShema = new mongoose.Schema({
     hour: {
-        type: Date,
-        default: new Date(),
-    },
-    compasCours: {
         type: Number,
-        default: null,
+        default: new Date().getHours(),
+    },
+    compasCourse: {
+        type: Number,
+        default: null
     },
     latitude: {
-        type: String,
+        type: Number,
         default: null
     },
     longitude: {
-        type: String,
+        type: Number,
         default: null
     },
     sailsState: {
