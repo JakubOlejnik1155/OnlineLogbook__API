@@ -7,7 +7,8 @@ const Day = require('../model/day/Day');
 const {HourEntry} = require('../model/day/Day');
 const {
     newDayValidation,
-    newHourlyEntryValidation
+    newHourlyEntryValidation,
+    newWeatherEntryValidation
 } = require("../function/validation");
 
 // POST /api/days => activatin a day of active cruise
@@ -86,6 +87,53 @@ router.post("/hourly", authenticateToken, async (req, res) => {
         await DayObject.save()
         return res.status(201).send({ success: { code: '201' } });
     }catch(error){
+        return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
+    }
+});
+
+router.post("/weather", authenticateToken, async (req, res) => {
+    const { data } = req.body;
+    const userID = req.id.userId;
+    //data validation
+    const { error } = newWeatherEntryValidation(data);
+    if (error) return res.status(400).send({ error: { code: 400, msg: error.details[0].message } });
+
+    // is active day for this user?
+    const CurrentDayObject = await CurrentDay.findOne({ userID: userID })
+    if (!CurrentDayObject) return res.status(400).send({ error: { code: 400, msg: "there is no active day" } })
+
+    //is day object connected with current day object?
+    const DayObject = await Day.findOne({ _id: CurrentDayObject.dayID });
+    if (!DayObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
+
+
+    //CZY MOZNA JUZ DODAC TAKI WPIS
+    const placeInWeatherArray = (hour) => {
+        if (hour >= 1 && hour <= 4) return 0;
+        else if (hour >= 5 && hour <= 8) return 1;
+        else if (hour >= 9 && hour <= 12) return 2;
+        else if (hour >= 13 && hour <= 16) return 3;
+        else if (hour >= 17 && hour <= 20) return 4;
+        else if (hour >= 21 && hour <= 24) return 5;
+        else if (hour === 0) return 5;
+    }
+    // is already entry on this hour ?
+    let flag = false;
+    const newArrayCase = placeInWeatherArray(data.hour);
+    await DayObject.weatherArray.forEach(entry => {
+        const arrayCase = placeInWeatherArray(entry.hour);
+        if(arrayCase === newArrayCase)
+            flag = true;
+    })
+    if (flag) return res.status(403).send({ error: { code: 403, msg: "You can add one weather entry for 4 hours." } });
+
+
+
+    try{
+        await DayObject.weatherArray.push(data);
+        await DayObject.save()
+        return res.status(201).send({ success: { code: '201' } });
+    } catch (error) {
         return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
     }
 });

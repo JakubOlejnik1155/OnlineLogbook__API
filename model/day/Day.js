@@ -16,8 +16,8 @@ const actionSchema = new mongoose.Schema({
 });
 const  weatcherSchema = new mongoose.Schema({
     hour: {
-        type: Date,
-        default: new Date(),
+        type: Number,
+        default: new Date().getHours(),
     },
     temperature: {
         type: Number,
@@ -27,7 +27,7 @@ const  weatcherSchema = new mongoose.Schema({
         type: Number,
         default: null,
     },
-    overcastLevel: {
+    overcast: {
         type: Number,
         default: null,
     },

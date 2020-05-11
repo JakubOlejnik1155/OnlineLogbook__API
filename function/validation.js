@@ -91,6 +91,20 @@ const newHourlyEntryValidation = data => {
   return schema.validate(data);
 }
 
+const newWeatherEntryValidation = data => {
+  const schema = Joi.object({
+    hour: Joi.number().required().max(24),
+    temperature: Joi.number().required(),
+    pressure: Joi.number().required(),
+    overcast: Joi.number().required(),
+    details: Joi.string().allow(''),
+  });
+  return schema.validate(data);
+}
+
+
+
+module.exports.newWeatherEntryValidation = newWeatherEntryValidation;
 module.exports.newHourlyEntryValidation = newHourlyEntryValidation;
 module.exports.newDayValidation = newDayValidation;
 module.exports.boatValidation = boatValidation;
