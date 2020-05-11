@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const CurrentCruise = require('../model/cruise/CurrentCruise');
 const CurrentDay = require('../model/day/CurrentDay');
 const Day = require('../model/day/Day');
-const {HourEntry} = require('../model/day/Day');
 const {
     newDayValidation,
     newHourlyEntryValidation,
@@ -146,7 +145,7 @@ function authenticateToken(req, res, next) {
     if (token === null) return res.send({ error: { code: 401, msg: "you are not authorized" } });
 
     jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (error, id) => {
-        if (error) return res.send({ error: { code: 401, msg: "you are not authorized" } });
+        if (error) return res.status(401).send({ error: { code: 401, msg: "you are not authorized" } });
         req.id = id;
         next();
     });
