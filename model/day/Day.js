@@ -92,11 +92,11 @@ const waypointSchema = new mongoose.Schema({
         default: null,
     },
     latitude: {
-        type: String,
+        type: Number,
         default: null
     },
     longitude: {
-        type: String,
+        type: Number,
         default: null
     }
 });
