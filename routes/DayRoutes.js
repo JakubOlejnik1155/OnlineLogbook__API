@@ -185,6 +185,32 @@ router.post("/action", authenticateToken, async (req, res) =>{
     }
 });
 
+//FORECAST ROUTES
+
+router.post("/forecast", authenticateToken, async (req, res) => {
+    const {data} = req.body;
+    const userID = req.id.userId;
+
+    // is active day for this user?
+    const CurrentDayObject = await CurrentDay.findOne({ userID: userID })
+    if (!CurrentDayObject) return res.status(400).send({ error: { code: 400, msg: "there is no active day" } })
+
+    //is day object connected with current day object?
+    const DayObject = await Day.findOne({ _id: CurrentDayObject.dayID });
+    if (!DayObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
+
+    try {
+        await DayObject.updateOne({receivedForecast: DayObject.receivedForecast.concat('\n' + data.forecast)});
+        await DayObject.save()
+        return res.status(201).send({ success: { code: '201' } });
+    } catch (error) {
+        return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
+    }
+});
+
+
+
+
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
