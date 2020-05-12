@@ -111,6 +111,16 @@ const newWaypointValidation = data => {
    return schema.validate(data);
 };
 
+const newActionValidation = data => {
+  const schema = Joi.object({
+    hour: Joi.date().required(),
+    actionType: Joi.string().required(),
+    details: Joi.string().allow(''),
+  });
+  return schema.validate(data);
+};
+
+module.exports.newActionValidation = newActionValidation;
 module.exports.newWaypointValidation = newWaypointValidation;
 module.exports.newWeatherEntryValidation = newWeatherEntryValidation;
 module.exports.newHourlyEntryValidation = newHourlyEntryValidation;

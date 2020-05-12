@@ -8,7 +8,8 @@ const {
     newDayValidation,
     newHourlyEntryValidation,
     newWeatherEntryValidation,
-    newWaypointValidation
+    newWaypointValidation,
+    newActionValidation
 } = require("../function/validation");
 
 // POST /api/days => activatin a day of active cruise
@@ -153,6 +154,30 @@ router.post("/waypoint", authenticateToken, async (req, res) => {
 
     try{
         await DayObject.waypointArray.push(data);
+        await DayObject.save()
+        return res.status(201).send({ success: { code: '201' } });
+    } catch (error) {
+        return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
+    }
+});
+
+router.post("/action", authenticateToken, async (req, res) =>{
+    const { data } = req.body;
+    const userID = req.id.userId;
+
+    const { error } = newActionValidation(data);
+    if (error) return res.status(400).send({ error: { code: 400, msg: error.details[0].message } });
+
+    // is active day for this user?
+    const CurrentDayObject = await CurrentDay.findOne({ userID: userID })
+    if (!CurrentDayObject) return res.status(400).send({ error: { code: 400, msg: "there is no active day" } })
+
+    //is day object connected with current day object?
+    const DayObject = await Day.findOne({ _id: CurrentDayObject.dayID });
+    if (!DayObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
+
+    try {
+        await DayObject.actionsArray.push(data);
         await DayObject.save()
         return res.status(201).send({ success: { code: '201' } });
     } catch (error) {

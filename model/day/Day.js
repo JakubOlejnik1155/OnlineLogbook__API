@@ -5,11 +5,11 @@ const actionSchema = new mongoose.Schema({
         type: Date,
         default: new Date()
     },
-    type: {
+    actionType: {
         type: String,
         default: null
     },
-    description:{
+    details:{
         type: String,
         default: null
     }
