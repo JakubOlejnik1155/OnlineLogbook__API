@@ -145,7 +145,7 @@ const DaySchema = new mongoose.Schema({
         default: null,
     },
     isDone: {
-        tyle: Boolean,
+        type: Boolean,
         default: false
     },
     ///////////////////////////////
@@ -163,7 +163,6 @@ const DaySchema = new mongoose.Schema({
         type: Number,
         default: null,
     },
-
 
     // INPUTS ARRAYS
     actionsArray:{
