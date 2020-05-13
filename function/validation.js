@@ -65,7 +65,8 @@ const boatValidation = data => {
 const newDayValidation = data => {
   const schema = Joi.object({
     startHarbor: Joi.string().required(),
-    engineMth: Joi.string().required(),
+    startLOG: Joi.number().required(),
+    engineMth: Joi.number().required(),
     oil: Joi.boolean().required(),
     fuel: Joi.number().required().min(0).max(100),
     freshWater: Joi.number().required().min(0).max(100),

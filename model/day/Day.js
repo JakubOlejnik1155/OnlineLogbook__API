@@ -135,7 +135,16 @@ const DaySchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-
+    ///////////////////////////////
+    startLOG: {
+        type: Number,
+        default: null,
+    },
+    endLOG: {
+        type: Number,
+        default: null,
+    },
+    ///////////////////////////////
 
     //END USER INPUTS
     endHarbor:{
