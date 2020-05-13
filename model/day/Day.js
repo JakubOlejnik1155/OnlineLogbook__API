@@ -144,6 +144,10 @@ const DaySchema = new mongoose.Schema({
         type: Number,
         default: null,
     },
+    isDone: {
+        tyle: Boolean,
+        default: false
+    },
     ///////////////////////////////
 
     //END USER INPUTS
