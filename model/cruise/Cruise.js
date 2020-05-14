@@ -30,7 +30,27 @@ const CruiseSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
-    }
+    },
+    nauticalMiles: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    travelHours: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    hoursSailedOnEngine: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    hoursSailedOnSails: {
+        type: Number,
+        required: true,
+        default: 0
+    },
 });
 
 module.exports = mongoose.model("Cruise", CruiseSchema);

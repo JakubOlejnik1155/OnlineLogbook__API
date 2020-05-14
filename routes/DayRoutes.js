@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const CurrentCruise = require('../model/cruise/CurrentCruise');
 const CurrentDay = require('../model/day/CurrentDay');
 const Day = require('../model/day/Day');
+const Cruise = require('../model/cruise/Cruise');
 const {
     newDayValidation,
     newHourlyEntryValidation,
@@ -221,6 +222,10 @@ router.post('/finish', authenticateToken, async (req, res) => {
     const DayObject = await Day.findOne({ _id: CurrentDayObject.dayID });
     if (!DayObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
 
+    //find cruise
+    const CruiseObject = await Cruise.findOne({ userID: userID, isDone: false});
+    if (!CruiseObject) return res.status(400).send({ error: { code: 400, msg: "there is no cruise object" } })
+
     const NauticalMiles = data.endLOG - DayObject.startLOG;
     let traveledHours = 0;
     let sailedHours = 0;
@@ -284,6 +289,12 @@ router.post('/finish', authenticateToken, async (req, res) => {
             hoursSailedOnEngine: engineHours,
             hoursSailedOnSails: sailedHours,
 
+        });
+        await Cruise.updateOne({
+            nauticalMiles: CruiseObject.nauticalMiles + NauticalMiles,
+            travelHours: CruiseObject.travelHours + traveledHours,
+            hoursSailedOnEngine: CruiseObject.hoursSailedOnEngine + engineHours,
+            hoursSailedOnSails: CruiseObject.hoursSailedOnSails + sailedHours
         });
         await DayObject.save()
         return res.status(201).send({ success: { code: '201' } });
