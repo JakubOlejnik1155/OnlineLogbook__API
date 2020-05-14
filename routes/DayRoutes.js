@@ -296,7 +296,8 @@ router.post('/finish', authenticateToken, async (req, res) => {
             hoursSailedOnEngine: CruiseObject.hoursSailedOnEngine + engineHours,
             hoursSailedOnSails: CruiseObject.hoursSailedOnSails + sailedHours
         });
-        await DayObject.save()
+        // TODO: delete maybe
+        // await DayObject.save()
         return res.status(201).send({ success: { code: '201' } });
     } catch (error) {
         return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
