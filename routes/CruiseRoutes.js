@@ -5,6 +5,7 @@ const Boat = require('../model/cruise/Boat');
 const Cruise = require('../model/cruise/Cruise');
 const CurrentCruise = require('../model/cruise/CurrentCruise');
 const CurrentDay = require('../model/day/CurrentDay');
+const Day = require('../model/day/Day');
 const {
     cruiseValidation,
     boatValidation
@@ -55,23 +56,23 @@ router.get("", authenticateToken, async (req, res) => {
     const userID = req.id.userId;
 
     let cruiseArray;
-    await Cruise.find({userID: userID}, (err, data) => {
+    await Cruise.find({userID: userID}, async (err, data) => {
         if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
-        else
+        else{
             cruiseArray = data;
-    });
-    if(cruiseArray){
-        for (let i = 0; i < cruiseArray.length; i++) {
-            await Boat.findOne({ _id: cruiseArray[i].boatID }, (err, boat) => {
-                if (boat) {
-                    cruiseArray[i] = { cruise: cruiseArray[i], boat: boat }
-                } else if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
-            })
+            for (let i = 0; i < cruiseArray.length; i++) {
+                await Boat.findOne({ _id: cruiseArray[i].boatID }, async (err, boat) => {
+                    if (boat) {
+                        // cruiseArray[i] = { cruise: cruiseArray[i], boat: boat }
+                        await Day.find({cruiseID: cruiseArray[i]._id},(err, day)=>{
+                            if(day) cruiseArray[i] = { cruise: cruiseArray[i], boat: boat , days: day}
+                        })
+                    } else if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error1" } });
+                })
+            }
+            return res.status(200).send({ data: cruiseArray })
         }
-        return res.status(200).send({ data: cruiseArray })
-    }else{
-        return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
-    }
+    });
 });
 
 // GET /api/cruises/current => check if is active cruise for user
