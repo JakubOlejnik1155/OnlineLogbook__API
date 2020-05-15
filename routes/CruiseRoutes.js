@@ -51,6 +51,25 @@ router.post("", authenticateToken, async (req, res) => {
     }
 });
 
+router.get("", authenticateToken, async (req, res) => {
+    const userID = req.id.userId;
+
+    let cruiseArray;
+    await Cruise.find({userID: userID}, (err, data) => {
+        if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        else
+            cruiseArray = data;
+    });
+    for (let i = 0; i < cruiseArray.length; i++) {
+        await Boat.findOne({ _id: cruiseArray[i].boatID }, (err, boat) => {
+            if (boat){
+                cruiseArray[i] = { cruise: cruiseArray[i], boat: boat}
+            } else if (err) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        })
+    }
+    return res.status(200).send({ data: cruiseArray})
+});
+
 // GET /api/cruises/current => check if is active cruise for user
 router.get("/current", authenticateToken, async (req, res) => {
     const userID = req.id.userId;
