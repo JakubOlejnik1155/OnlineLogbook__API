@@ -1,5 +1,23 @@
 const mongoose = require('mongoose');
+const boatSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    type: {
+        type: String,
+        required: false,
+    },
+    MMSI: {
+        type: Number,
+        required: true,
+    },
+    draft: {
+        type: Number,
+        required: false,
+    }
 
+});
 const CruiseSchema = new mongoose.Schema({
     userID: {
         type: String,
@@ -23,8 +41,9 @@ const CruiseSchema = new mongoose.Schema({
         default: new Date(),
     },
     boatID: {
-        type: String,
+        type: [boatSchema],
         required: true,
+        default: []
     },
     isDone: {
         type: Boolean,
