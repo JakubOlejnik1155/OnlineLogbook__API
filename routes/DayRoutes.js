@@ -304,6 +304,17 @@ router.post('/finish', authenticateToken, async (req, res) => {
     }
 });
 
+//get days of cruise
+router.get('/cruise/:token', authenticateToken, async (req, res) => {
+    const cruiseID = req.params.token;
+    const userID = req.id.userId;
+    await Day.find({cruiseID: cruiseID, userID: userID}, (error, data)=>{
+        if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        else if (data) return res.status(200).send({ data: data })
+    });
+    return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+});
+
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
