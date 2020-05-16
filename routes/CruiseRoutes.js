@@ -56,31 +56,11 @@ router.post("", authenticateToken, async (req, res) => {
 router.get("", authenticateToken, async (req, res) => {
     const userID = req.id.userId;
 
-    let cruises;
-    await Cruise.find({userID: userID}, (error, data) => {
+    // let cruises;
+    await Cruise.find({userID: userID}, async (error, data) => {
         if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
-        else if(data) cruises = data
+        else if (data) return res.status(200).send({ data: data })
     });
-
-
-    const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
-    async function asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-            await callback(array[index], index, array);
-        }
-    }
-
-    //TODO: //chnge
-    // if(cruises){
-        await waitFor(5000);
-        await asyncForEach(cruises, async (cruise, i) => {
-            await Day.find({ cruiseID: cruises[i]._id }, (error, day) => {
-                if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
-                else if (day) cruises[i] = { cruise: cruises[i], days: day }
-            })
-        })
-        return res.status(200).send({ data: cruises })
-    // } else { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error1" } });}
 });
 
 // GET /api/cruises/current => check if is active cruise for user
