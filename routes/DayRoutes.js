@@ -312,7 +312,6 @@ router.get('/cruise/:token', authenticateToken, async (req, res) => {
         if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
         else if (data) return res.status(200).send({ data: data })
     });
-    return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
 });
 
 
