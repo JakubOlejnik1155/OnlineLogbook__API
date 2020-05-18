@@ -1,4 +1,30 @@
 module.exports = (data) =>{
+    const waypoint = (i) => {
+        let flag = true;
+        let object;
+        if (data.waypointArray[i]) {
+            flag = false;
+            object = data.waypointArray[i];
+        }
+
+        if (flag) {
+            return `
+            <tr>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+        `
+        } else {
+            return `
+                <tr>
+                    <td>${object.name}</td>
+                    <td>${convertDMSLng(object.latitude)}</td>
+                    <td>${convertDMSLng(object.longitude)}</td>
+                </tr>
+            `
+        }
+    };
     const hours = (i) => {
         let flag = true;
         let object;
@@ -51,7 +77,7 @@ module.exports = (data) =>{
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;1,700&display=swap" rel="stylesheet">
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -70,13 +96,23 @@ module.exports = (data) =>{
             font-size: 10px;
             margin: 0;
             padding: 0;
+            max-width: 8in;
+        }
+        .wrapper{
+            position: relative;
         }
         .left {
             width: 4in;
             height: 100vh;
         }
         .right {
-            height: 100vh;
+            position: absolute;
+            width: 4in;
+            top: 3px;
+            left: 4in;
+            margin: 3px;
+            margin-top: 0px;
+            padding: 3px
         }
         .date {
             display: inline-block;
@@ -125,13 +161,23 @@ module.exports = (data) =>{
             font-style: italic;
         }
         .tanksTable {
-        border: 1px solid black;
-        border-radius: 3px;
-        padding: 3px;
-        margin: 3px;
-        width: 4in;
-        height: 80px;
-        position: relative;
+            border: 1px solid black;
+            border-radius: 3px;
+            padding: 3px;
+            margin: 3px;
+            width: 4in;
+            height: 80px;
+            position: relative;
+      }
+      .waypointTable{
+            border: 1px solid black;
+            border-radius: 3px;
+            padding: 3px;
+            margin: 3px;
+            margin-top: 0px;
+            width: 4in;
+            height: 65px;
+            position: relative;
       }
       .t1 {
         position: absolute;
@@ -247,7 +293,37 @@ module.exports = (data) =>{
                         </div>
             </div>
         </div>
-        <!--<div class="right"></div>-->
+            <div class="right">
+                <div class="waypointTable">
+
+                                <table id="tablePreview" class="table t1">
+                                   <tbody>
+                                <tr>
+                                    <th class="strong">Marina VHF</th>
+                                    <td>${data.marinaVHF !== 0 ? data.marinaVHF : ' - '}</td>
+                                </tr>
+                                <tr>
+                                    <th class="strong">Marina charges</th>
+                                    <td>${data.marinaCharges !== '' ? data.marinaCharges : ' - '}</td>
+                                </tr>
+                            </tbody>
+                                </table>
+
+                                <table id="tablePreview" class="table t2">
+                                    <thead>
+                                        <tr>
+                                            <th>Waypoint</th>
+                                            <th>latitude</th>
+                                            <th>longitude</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${waypoint(0)}
+                                        ${waypoint(1)}
+                                    </tbody>
+                                </table>
+
+            </div>
         </div>
     </body>
     </html>`
