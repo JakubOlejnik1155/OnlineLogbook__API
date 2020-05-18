@@ -13,6 +13,28 @@ const {
     newActionValidation
 } = require("../function/validation");
 
+const pdf = require('html-pdf');
+const pdfTemplate = require('../documents');
+
+
+//POST - pdf generation and fath data
+router.post('/pdf', authenticateToken, async (req, res) => {
+    pdf.create(pdfTemplate(req.body), { orientation: 'landscape'}).toFile('routes/logbooks/result.pdf', (error) => {
+        if(error){
+            return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        }
+        return res.send(Promise.resolve());
+    })
+});
+
+//GET - send pdf to client
+router.get('/pdf', authenticateToken, (req, res) => {
+    res.sendFile(`${__dirname}/logbooks/result.pdf`)
+})
+
+
+
+
 // POST /api/days => activatin a day of active cruise
 router.post("", authenticateToken, async (req, res) => {
     const { day } = req.body;
