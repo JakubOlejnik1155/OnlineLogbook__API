@@ -224,12 +224,22 @@ module.exports = (data) =>{
             height: 80px;
             position: relative;
       }
+      .forecastTable{
+            border: 1px solid black;
+            border-radius: 3px;
+            padding: 3px;
+            margin: 3px;
+            margin-bottom: 0px;
+            width: 4in;
+            height: 45px;
+            position: relative;
+      }
       .waypointTable{
             border: 1px solid black;
             border-radius: 3px;
             padding: 3px;
             margin: 3px;
-            margin-top: 0px;
+            margin-top: -3px;
             width: 4in;
             height: 65px;
             position: relative;
@@ -470,13 +480,20 @@ module.exports = (data) =>{
                                         </tr>
                                     </tbody>
                                 </table>
-                </div>
-
-
+            </div>
+            <div class="forecastTable">
+                <table id="tablePreview" class="table">
+                    <tbody>
+                        <tr>
+                            <th class="strong" style="width: .5in;">Received forecast:</th>
+                            <td>${data.receivedForecast === null ? "" : data.receivedForecast}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </body>
-    </html>`
+</html>`
 };
 
 
