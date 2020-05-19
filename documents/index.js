@@ -151,20 +151,20 @@ module.exports = (data) =>{
             font-size: 10px;
             margin: 0;
             padding: 0;
-            max-width: 8in;
+            max-width: 10.5in;
         }
         .wrapper{
             position: relative;
         }
         .left {
-            width: 4in;
+            width: 4.5in;
             height: 100vh;
         }
         .right {
             position: absolute;
             width: 4in;
             top: 3px;
-            left: 4in;
+            left: 4.5in;
             margin: 3px;
             margin-top: 0px;
             padding: 3px
@@ -185,7 +185,17 @@ module.exports = (data) =>{
             border-radius: 3px;
             padding: 3px;
             margin: 3px;
-            width: 4in;
+            width: 4.5in;
+            margin-bottom: 0px;
+            margin-top: 0px;
+            padding-bottom: 0px;
+        }
+        .tablecontainer2{
+            border: 1px solid black;
+            border-radius: 3px;
+            padding: 3px;
+            margin: 3px;
+            width: 4.15in;
             margin-bottom: 0px;
             margin-top: 0px;
             padding-bottom: 0px;
@@ -193,7 +203,7 @@ module.exports = (data) =>{
         .header{
             padding: 3px;
             margin: 3px;
-            width: 4in;
+            width: 4.5in;
             margin-bottom: 0px;
 
         }
@@ -220,7 +230,7 @@ module.exports = (data) =>{
             border-radius: 3px;
             padding: 3px;
             margin: 3px;
-            width: 4in;
+            width: 4.5in;
             height: 80px;
             position: relative;
       }
@@ -230,7 +240,7 @@ module.exports = (data) =>{
             padding: 3px;
             margin: 3px;
             margin-bottom: 0px;
-            width: 4in;
+            width: 4.15in;
             height: 45px;
             position: relative;
       }
@@ -240,7 +250,7 @@ module.exports = (data) =>{
             padding: 3px;
             margin: 3px;
             margin-top: -3px;
-            width: 4in;
+            width: 4.15in;
             height: 65px;
             position: relative;
       }
@@ -389,7 +399,7 @@ module.exports = (data) =>{
                                 </table>
                                 </div>
 
-                <div class="tablecontainer">
+                <div class="tablecontainer2">
                                 <table id="tablePreview" class="table">
                                     <thead>
                                         <tr>
