@@ -2,4 +2,4 @@
 .env
 .idea.DS_Store
 .DS_Store
-/logbooks/result.pdf
+/routes/logbooks/result.pdf
