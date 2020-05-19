@@ -15,6 +15,7 @@ const {
 
 const pdf = require('html-pdf');
 const pdfTemplate = require('../documents');
+const fs = require('fs')
 
 
 //POST - pdf generation and fath data
@@ -28,9 +29,16 @@ router.post('/pdf', authenticateToken, async (req, res) => {
 });
 
 //GET - send pdf to client
-router.get('/pdf', authenticateToken, (req, res) => {
-    res.sendFile(`${__dirname}/logbooks/result.pdf`)
-})
+router.get('/pdf', authenticateToken, async (req, res) => {
+    res.sendFile(`${__dirname}/logbooks/result.pdf`, () => {
+        try {
+            fs.unlinkSync(`${__dirname}/logbooks/result.pdf`);
+        } catch (e) {
+            console.log(e);
+        }
+    })
+});
+
 
 
 
