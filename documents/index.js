@@ -69,6 +69,58 @@ module.exports = (data) =>{
         }
     }
 
+    const weather = (table) => {
+        let flag = true;
+        let object;
+        data.weatherArray.forEach(entry => {
+            if(table.includes(entry.hour))
+            {
+                flag = false;
+                object = entry;
+            }
+        })
+        if (!flag) {
+            return `
+            ${object.temperature} °C <br/>
+            ${object.pressure} hPa <br/>
+            overcast: ${object.overcast} &#x2601; <br/>
+            ${object.details}
+            `
+        }else{
+            return ''
+        }
+    };
+    const actionToIcon = (action) => {
+        if (action === "leave")
+            return `&#x27A1;`;
+        if (action === "setSails" || action === "unreefSails" || action==="engineOff")
+            return `&#x2B06;`;
+        if (action === "dropSails" || action === "reef" || action ==="engineOn")
+            return `&#x2B07;`;
+        if (action === "tack")
+            return `tack`;
+        if (action === "gybe")
+            return `gybe`;
+        if (action === 'anchorDrop')
+            return '<span style="font-size: 16px;"> &#x2693; </span>'
+        if (action === 'mooring')
+            return '<span style="font-size: 16px;">&#x27FF;</span>'
+        if (action === 'mooringBuoy')
+            return '<span style="font-size: 16px;">&#x235C;</span>'
+        return '';
+    }
+
+    const actions = (data) => {
+        let string = '';
+        data.actionsArray.forEach(action => {
+            const date = new Date(action.hour).toLocaleTimeString().split(":");
+            if (action.actionType === 'other')
+                string += `<span style="margin-right: 5px; margin-left: 20px;">${date[0]}:${date[1]}</span> ${action.details} <br/>`
+            else
+                string += `<span style="margin-right: 5px; margin-left: 20px;">${date[0]}:${date[1]}</span> <span style="color: rgb(28,144,227);"> ${actionToIcon(action.actionType)}</span>  ${action.details} <br/>`
+        });
+        return string;
+    };
 
     return `
         <!DOCTYPE html>
@@ -85,6 +137,9 @@ module.exports = (data) =>{
         <title>logbook</title>
 
         <style>
+        .leftBorder{
+            border-left: 1px solid gray;
+        }
         * {
             font-family: Roboto, arial;
             font-size: 10px;
@@ -322,6 +377,101 @@ module.exports = (data) =>{
                                         ${waypoint(1)}
                                     </tbody>
                                 </table>
+                                </div>
+
+                <div class="tablecontainer">
+                                <table id="tablePreview" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>actions</th>
+                                            <th>weather</th>
+                                            <th>h.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td rowspan="24" align="left" style="vertical-align:middle;"> <p class="text-left">${actions(data)}</p></td>
+                                            <td rowspan="4" style="vertical-align:middle"> ${weather([1,2,3,4])} </td>
+                                            <th scope="row">1</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">2</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">3</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">4</th>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" style="vertical-align:middle">${weather([5,6,7,8])}</td>
+                                            <th scope="row">5</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">6</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">7</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">8</th>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" style="vertical-align:middle">${weather([9,10,11,12])}</td>
+                                            <th scope="row">9</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">10</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">11</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">12</th>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" style="vertical-align:middle">${weather([13, 14, 15, 16])}</td>
+                                            <th scope="row">13</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">14</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">15</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">16</th>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" style="vertical-align:middle">${weather([17, 18, 19, 20])}</td>
+                                            <th scope="row">17</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">18</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">19</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">20</th>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" style="vertical-align:middle">${weather([21, 22, 23, 24, 0])}</td>
+                                            <th scope="row">21</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">22</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">23</th>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">24</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                </div>
+
 
             </div>
         </div>
