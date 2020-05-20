@@ -303,7 +303,6 @@ router.post('/finish', authenticateToken, async (req, res) => {
             tmpEngineHoursEnd = null;
         }
     })
-
     try {
         await CurrentDay.deleteOne(CurrentDayObject);
         await DayObject.updateOne({
@@ -318,7 +317,7 @@ router.post('/finish', authenticateToken, async (req, res) => {
             hoursSailedOnSails: sailedHours,
 
         });
-        await Cruise.updateOne({
+        await CruiseObject.updateOne({
             nauticalMiles: CruiseObject.nauticalMiles + NauticalMiles,
             travelHours: CruiseObject.travelHours + traveledHours,
             hoursSailedOnEngine: CruiseObject.hoursSailedOnEngine + engineHours,
