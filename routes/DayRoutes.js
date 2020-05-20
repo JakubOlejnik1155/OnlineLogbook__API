@@ -22,7 +22,7 @@ const fs = require('fs')
 router.post('/pdf', authenticateToken, async (req, res) => {
     pdf.create(pdfTemplate(req.body), { orientation: 'landscape'}).toFile('routes/logbooks/result.pdf', (error) => {
         if(error){
-            return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+            return res.send(Promise.reject())
         }
         return res.send(Promise.resolve());
     })
@@ -33,9 +33,7 @@ router.get('/pdf', authenticateToken, async (req, res) => {
     res.sendFile(`${__dirname}/logbooks/result.pdf`, () => {
         try {
             fs.unlinkSync(`${__dirname}/logbooks/result.pdf`);
-        } catch (e) {
-            console.log(e);
-        }
+        } catch (e) { return res.send(Promise.reject()) }
     })
 });
 

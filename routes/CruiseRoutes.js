@@ -11,6 +11,48 @@ const {
     boatValidation
 } = require("../function/validation");
 
+const pdf = require('html-pdf');
+const pdfTemplate = require('../documents');
+const fs = require('fs');
+const mergePDFs = require('merge-multiple-pdfs');
+const rimraf = require("rimraf");
+
+
+//POST - pdf generation and fath data
+// /api/cruises
+router.post('/pdf', authenticateToken, async (req, res) => {
+    let counter =0;
+    let files = [];
+    req.body.data.forEach((day)=>{
+       pdf.create(pdfTemplate(day), { orientation: 'landscape' }).toFile(`${__dirname}/../documents/logbooks/cruises/${new Date(day.date).toLocaleDateString()}.pdf`, (error) => {
+             if (error) {
+                 return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
+            }
+            counter++;
+            files.push(`${__dirname}/../documents/logbooks/cruises/${new Date(day.date).toLocaleDateString()}.pdf`)
+            if (counter === req.body.data.length){
+                try{
+                    mergePDFs.appendPdf(files, `${__dirname}/cruise.pdf`);
+                }
+                catch (e) { return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });}
+                return res.send(Promise.resolve());
+            }
+        })
+    })
+});
+
+//GET - send pdf to client
+router.get('/pdf', authenticateToken, async (req, res) => {
+    try{
+        res.sendFile(`${__dirname}/cruise.pdf`, () => {
+                fs.unlinkSync(`${__dirname}/cruise.pdf`);
+                rimraf.sync(`${__dirname}/../documents/logbooks/cruises`);
+        })
+    } catch (e) { return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } }); }
+});
+
+
+
 // POST /api/cruises  => add cruise
 router.post("", authenticateToken, async (req, res) => {
     const {boat, cruise } = req.body;

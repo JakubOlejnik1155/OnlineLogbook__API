@@ -18,8 +18,10 @@
     "express": "^4.17.1",
     "html-pdf": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
+    "merge-multiple-pdfs": "^1.0.3",
     "mongoose": "^5.9.5",
-    "pug": "^2.0.4"
+    "pug": "^2.0.4",
+    "rimraf": "^3.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.2",
