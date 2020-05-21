@@ -51,7 +51,38 @@ router.get('/pdf', authenticateToken, async (req, res) => {
     } catch (e) { return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } }); }
 });
 
+router.delete('/:id', authenticateToken, async (req, res) => {
+    const userID = req.id.userId;
+    const cruiseID = req.params.id;
 
+    const CruiseObject = await Cruise.findOne({_id: cruiseID});
+    if (!CruiseObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
+
+    let daysArray;
+    await Day.find({cruiseID: cruiseID}, (error, data)=>{
+        if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        else if (data) daysArray = data;
+    });
+
+    try {
+        let counter = 0;
+        for (let i = 0; i < daysArray.length; i++) {
+            const element = daysArray[i];
+            await  Day.deleteOne({_id: element._id})
+            counter++;
+            if (counter === daysArray.length) {
+                await Cruise.deleteOne({ _id: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); } });
+                if (!CruiseObject.isDone) {
+                    await CurrentCruise.deleteOne({ cruiseID: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); } })
+                }
+                await CurrentDay.deleteOne({ cruiseID: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); } })
+                return res.status(201).send({ success: { code: '201' } });
+            }
+        }
+    } catch (error) {
+        return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+    }
+});
 
 // POST /api/cruises  => add cruise
 router.post("", authenticateToken, async (req, res) => {
