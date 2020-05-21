@@ -341,6 +341,36 @@ router.get('/cruise/:token', authenticateToken, async (req, res) => {
     });
 });
 
+router.delete('/:id', authenticateToken, async (req, res) => {
+    const userID = req.id.userId;
+    const dayID = req.params.id;
+
+    const DayObject = await Day.findOne({userID: userID, _id: dayID})
+    if (!DayObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object"}})
+
+    const CruiseObject = await Cruise.findOne({ userID: userID, _id: DayObject.cruiseID })
+    if (!CruiseObject) return res.status(400).send({ error: { code: 400, msg: "there is no cruise object" } })
+
+    try{
+        await Day.deleteOne({ userID: userID, _id: dayID }, (error)=>{if (error) {return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); }})
+        if (!DayObject.isDone) {
+            await CurrentDay.deleteOne({ dayID: dayID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); } })
+        }else if (DayObject.isDone){
+            await CruiseObject.updateOne({
+                nauticalMiles: CruiseObject.nauticalMiles - DayObject.nauticalMiles,
+                travelHours: CruiseObject.travelHours - DayObject.travelHours,
+                hoursSailedOnEngine: CruiseObject.hoursSailedOnEngine - DayObject.hoursSailedOnEngine,
+                hoursSailedOnSails: CruiseObject.hoursSailedOnSails - DayObject.hoursSailedOnSails
+            });
+        }
+        return res.status(201).send({ success: { code: '201' } });
+    }catch(error){
+        return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+    }
+
+
+});
+
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
