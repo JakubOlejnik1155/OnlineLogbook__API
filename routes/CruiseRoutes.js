@@ -58,7 +58,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const CruiseObject = await Cruise.findOne({_id: cruiseID});
     if (!CruiseObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
 
-    let daysArray = null;
+    let daysArray;
     await Day.find({cruiseID: cruiseID}, (error, data)=>{
         if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error 1" } });
         else if (data) daysArray = data;
@@ -73,7 +73,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         }
 
         let counter = 0;
-        if(daysArray){
+        if(daysArray.length !== 0){
             for (let i = 0; i < daysArray.length; i++) {
                 const element = daysArray[i];
                 await Day.deleteOne({ _id: element._id })
