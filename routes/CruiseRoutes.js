@@ -58,29 +58,36 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const CruiseObject = await Cruise.findOne({_id: cruiseID});
     if (!CruiseObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
 
-    let daysArray;
+    let daysArray = null;
     await Day.find({cruiseID: cruiseID}, (error, data)=>{
-        if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        if (error) return res.status(500).send({ error: { code: 500, msg: "Internal Server Error 1" } });
         else if (data) daysArray = data;
     });
 
     try {
+        //delete from cruises
+        await Cruise.deleteOne({ _id: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error 2" } }); } });
+        //delete from current cruises if active
+        if (!CruiseObject.isDone) {
+            await CurrentCruise.deleteOne({ cruiseID: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error 3" } }); } })
+        }
+
         let counter = 0;
-        for (let i = 0; i < daysArray.length; i++) {
-            const element = daysArray[i];
-            await  Day.deleteOne({_id: element._id})
-            counter++;
-            if (counter === daysArray.length) {
-                await Cruise.deleteOne({ _id: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); } });
-                if (!CruiseObject.isDone) {
-                    await CurrentCruise.deleteOne({ cruiseID: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); } })
+        if(daysArray){
+            for (let i = 0; i < daysArray.length; i++) {
+                const element = daysArray[i];
+                await Day.deleteOne({ _id: element._id })
+                counter++;
+                if (counter === daysArray.length) {
+                    await CurrentDay.deleteOne({ cruiseID: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error 4" } }); } })
+                    return res.status(201).send({ success: { code: '201' } });
                 }
-                await CurrentDay.deleteOne({ cruiseID: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } }); } })
-                return res.status(201).send({ success: { code: '201' } });
             }
+        }else{
+            return res.status(201).send({ success: { code: '201' } });
         }
     } catch (error) {
-        return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+        return res.status(500).send({ error: { code: 500, msg: "Internal Server Error 5" } });
     }
 });
 
@@ -165,7 +172,7 @@ router.patch("/finish", authenticateToken, async (req, res) => {
 
     try {
         await CurrentCruise.deleteOne(CurrentCruiseObject);
-        await Cruise.updateOne({isDone: true});
+        await CruiseObject.updateOne({isDone: true});
         return res.status(201).send({ success: { code: '201' } });
     } catch (error) {
         return res.status(400).send({ error: { code: 500, msg: 'we could not complete this operation' } });
