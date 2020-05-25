@@ -28,6 +28,22 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
     default: 0
+  },
+  milesSailed: {
+    type: Number,
+    default: 0
+  },
+  hours: {
+    type: Number,
+    default: 0
+  },
+  onSails: {
+    type: Number,
+    default: 0
+  },
+  onEngine: {
+    type: Number,
+    default: 0
   }
 });
 

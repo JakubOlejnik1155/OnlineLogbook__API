@@ -5,6 +5,8 @@ const CurrentCruise = require('../model/cruise/CurrentCruise');
 const CurrentDay = require('../model/day/CurrentDay');
 const Day = require('../model/day/Day');
 const Cruise = require('../model/cruise/Cruise');
+const User = require("../model/user/User");
+const SocialUser = require('../model/user/SocialUser');
 const {
     newDayValidation,
     newHourlyEntryValidation,
@@ -242,6 +244,11 @@ router.post('/finish', authenticateToken, async (req, res) => {
     const {data} = req.body;
     const userID = req.id.userId;
 
+    let UserObject;
+    UserObject =  await User.findOne({_id: userID});
+    if(!UserObject) UserObject = await SocialUser.findOne({_id: userID});
+    if (!UserObject) return res.send({ error: { code: 401, msg: "you are not authorized" } });
+
     // is active day for this user?
     const CurrentDayObject = await CurrentDay.findOne({ userID: userID })
     if (!CurrentDayObject) return res.status(400).send({ error: { code: 400, msg: "there is no active day" } })
@@ -323,6 +330,12 @@ router.post('/finish', authenticateToken, async (req, res) => {
             hoursSailedOnEngine: CruiseObject.hoursSailedOnEngine + engineHours,
             hoursSailedOnSails: CruiseObject.hoursSailedOnSails + sailedHours
         });
+        await UserObject.updateOne({
+            milesSailed: UserObject.milesSailed + NauticalMiles,
+            hours: UserObject.hours + traveledHours,
+            onSails: UserObject.onSails + sailedHours,
+            onEngine: UserObject.onEngine + engineHours,
+        })
         // TODO: delete maybe
         // await DayObject.save()
         return res.status(201).send({ success: { code: '201' } });
