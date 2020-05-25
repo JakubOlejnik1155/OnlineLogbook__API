@@ -1,6 +1,8 @@
 //authentication routes
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
+const User = require("../model/user/User");
+const SocialUser = require('../model/user/SocialUser');
 // const Boat = require('../model/cruise/Boat');
 const Cruise = require('../model/cruise/Cruise');
 const CurrentCruise = require('../model/cruise/CurrentCruise');
@@ -55,6 +57,11 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const userID = req.id.userId;
     const cruiseID = req.params.id;
 
+    let UserObject;
+    UserObject = await User.findOne({ _id: userID });
+    if (!UserObject) UserObject = await SocialUser.findOne({ _id: userID });
+    if (!UserObject) return res.send({ error: { code: 401, msg: "you are not authorized" } });
+
     const CruiseObject = await Cruise.findOne({_id: cruiseID});
     if (!CruiseObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object" } })
 
@@ -71,7 +78,12 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         if (!CruiseObject.isDone) {
             await CurrentCruise.deleteOne({ cruiseID: cruiseID }, (error) => { if (error) { return res.status(500).send({ error: { code: 500, msg: "Internal Server Error 3" } }); } })
         }
-
+        await UserObject.updateOne({
+            milesSailed: UserObject.milesSailed - CruiseObject.nauticalMiles,
+            hours: UserObject.hours - CruiseObject.travelHours,
+            onSails: UserObject.onSails - CruiseObject.hoursSailedOnSails,
+            onEngine: UserObject.onEngine - CruiseObject.hoursSailedOnEngine,
+        })
         let counter = 0;
         if(daysArray.length !== 0){
             for (let i = 0; i < daysArray.length; i++) {
