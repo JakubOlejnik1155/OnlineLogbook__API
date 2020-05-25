@@ -358,6 +358,11 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const userID = req.id.userId;
     const dayID = req.params.id;
 
+    let UserObject;
+    UserObject = await User.findOne({ _id: userID });
+    if (!UserObject) UserObject = await SocialUser.findOne({ _id: userID });
+    if (!UserObject) return res.send({ error: { code: 401, msg: "you are not authorized" } });
+
     const DayObject = await Day.findOne({userID: userID, _id: dayID})
     if (!DayObject) return res.status(400).send({ error: { code: 400, msg: "there is no day object"}})
 
@@ -376,6 +381,12 @@ router.delete('/:id', authenticateToken, async (req, res) => {
                 hoursSailedOnSails: CruiseObject.hoursSailedOnSails - DayObject.hoursSailedOnSails
             });
         }
+        await UserObject.updateOne({
+            milesSailed: UserObject.milesSailed - DayObject.nauticalMiles,
+            hours: UserObject.hours - DayObject.travelHours,
+            onSails: UserObject.onSails - DayObject.hoursSailedOnSails,
+            onEngine: UserObject.onEngine - DayObject.hoursSailedOnEngine,
+        })
         return res.status(201).send({ success: { code: '201' } });
     }catch(error){
         return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
