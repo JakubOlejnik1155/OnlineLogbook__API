@@ -160,7 +160,24 @@ router.post( "/socialuser", async (req, res)=>{
   catch(e){return res.send({error: "something went wrong"})}
 
 });
+router.get("", authenticateToken, async (req, res)=>{
+    const userID = req.id.userId;
+    try{
+        let UserObject;
+        UserObject = await User.findOne({ _id: userID });
+        if (!UserObject) UserObject = await SocialUser.findOne({ _id: userID });
+        if (!UserObject) return res.send({ error: { code: 401, msg: "you are not authorized" } });
 
+        return res.status(200).send({ data: {
+          milesSailed: UserObject.milesSailed,
+          hours: UserObject.hours,
+          onSails: UserObject.onSails,
+          onEngine: UserObject.onEngine
+        },success: { code: '200' } });
+    }catch (error) {
+      return res.status(500).send({ error: { code: 500, msg: "Internal Server Error" } });
+    }
+})
 
 //try breakpoint authorization
 router.get('/try', authenticateToken, (req, res)=>{
@@ -172,7 +189,7 @@ function authenticateToken(req, res, next){
   const token = authHeader && authHeader.split(' ')[1];
   if (token === null) return res.send({error: true, message: "you are not authorized"});
 
-  jwt.verify(token, process.env.TOKEN_SECRET, (error, id) =>{
+  jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (error, id) =>{
     if (error) return res.send({error: true, message: "you are not authorized"});
     req.id = id;
     next();
