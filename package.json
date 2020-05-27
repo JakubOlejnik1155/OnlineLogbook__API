@@ -4,6 +4,7 @@
   "description": "REST API for e-logbook",
   "main": "index.js",
   "scripts": {
+    "all": "nodemon index.js & nodemon authServer.js",
     "start": "nodemon index.js",
     "authStart": "nodemon authServer.js"
   },
