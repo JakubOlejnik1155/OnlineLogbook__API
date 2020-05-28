@@ -12,6 +12,9 @@ const {
   setNewPasswordValidation
 } = require("../function/validation");
 const { loginValidation } = require("../function/validation");
+const generateAccessToken = (user) => {
+  return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: '5m' });
+};
 
 //registration breakpoint
 router.post("/register", async (req, res) => {
