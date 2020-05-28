@@ -18,11 +18,11 @@ mongoose.connect(
 //Middleware
 app.use(express.json());
 app.use(cors());
-
+app.use(express.static('public', {}))
 //route Middleware
 app.use("/api/user", Routes);
 app.use("/api/cruises", CruiseRouter);
 app.use("/api/days", DayRoutes);
-
+app.use( "*",express.static('public', {}))
 
 app.listen(3000, () => console.log("server Up and Running"));
